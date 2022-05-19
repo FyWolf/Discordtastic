@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discordtastic | Login</title>
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+<body>
+    <main class="user">
+        <fieldset>
+            <legend>Login</legend>
+            <p><?= $error ?></p>
+            <form action="" method="POST">
+                <label for="email">Email</label>
+                <input type="email" name="email" placeholder="Email" required>
+                <label for="passwd">Password</label>
+                <input type="password" name="passwd" placeholder="Password" required>
+                <input type="hidden" name="action" value="5">
+                <button type="submit">Login</button>
+            </form>
+            <a href="?page=register"><button>Register</button></a>
+        </feildset>
+    </main>
+</body>
+</html>

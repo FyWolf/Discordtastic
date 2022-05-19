@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discordtastic</title>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <aside>
+        <nav>
+            <?php foreach($salons as $value) { ?>
+                    <button class="accordion"><?= $value->name ?></button>
+                    <div class="panel">
+                        <?php foreach($value->salons as $underValue) { ?>
+                            <a href="?salon=<?= $underValue['id'] ?>&page=salon"><button class="navButton<?php if($underValue['id'] == $showedSalon) { ?> current<?php } ?>"><i class="fa-solid fa-hashtag"></i><?= $underValue['name'] ?></button></a>
+                        <?php } ?>
+                    </div>
+            <?php } ?>
+        </nav>
+        <?php if(empty($_SESSION['userRole'])) { ?>
+        <a class="login" href="?page=login"><button>Login</button></a>
+        <?php } else { ?>
+        <a class="login" href="?page=disconnect"><button>disconnect</button></a>
+        <?php } ?>
+    </aside>
+    <main>
+        <div class="messages" id="message">
+            <?php foreach($messages as $value) { ?>
+                <div>
+                    <p class="date"><?= date('Y-m-d h:i:s', $value['post_date']) ?></p>
+                    <p class="content"><?= $value['content'] ?></p>
+                </div>
+            <?php } ?>
+        </div>
+        <div class="textInput">
+            <form action="?salon=<?= $showedSalon ?>" method="POST">
+                <input type="text" name="content" placeholder="message" required autocomplete="off">
+                <input type="hidden" name="salon" value="<?= $showedSalon ?>">
+                <input type="hidden" name="action" value="0">
+            </form>
+        </div>
+    </main>
+    <aside>
+        <div>
+            <button id="creation" class="createButton">create menu</button>
+        </div>
+    </aside>
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="tab">
+                <button class="tablinks" onclick="swapTab(event, 'addCategory')" id="defaultOpen">New Caterory</button>
+                <button class="tablinks" onclick="swapTab(event, 'addChannel')">New Channel</button>
+                <?php if(!empty($_SESSION['userRole']) && $_SESSION['userRole'] == 'admin') { ?>
+                    <button class="tablinks" onclick="swapTab(event, 'admin')">Admin menu</button>
+                <?php } ?>
+            </div>
+            <div id="addCategory" class="tabcontent">
+                <form action="?salon=<?= $showedSalon ?>" method="POST">
+                    <label>Category name:</label>
+                    <input type="text" name="name" placeholder="name" required autocomplete="off">
+                    <input type="hidden" name="action" value="1"> <br/>
+                    <button type="submit">Create category</button>
+                </form>
+            </div>
+
+            <div id="addChannel" class="tabcontent">
+                <form action="?salon=<?= $showedSalon ?>" method="POST">
+                    <label>Channel name:</label>
+                    <input type="text" name="name" placeholder="name" required autocomplete="off"> <br/>
+                    <label for="channel_category">Choose a category:</label>
+                    <select name="channel_category">
+                        <?php foreach($salons as $value) { ?>
+                            <option value="<?= $value->id ?>"><?= $value->name ?></option>
+                        <?php } ?>
+                    </select> <br/>
+                    <input type="hidden" name="action" value="2">
+                    <button type="submit">Create channel</button>
+                </form>
+            </div>
+
+            <?php if(!empty($_SESSION['userRole']) && $_SESSION['userRole'] == 'admin') { ?>
+                <div id="admin" class="tabcontent">
+                    <form action="?salon=<?= $showedSalon ?>" method="POST">
+                        <select name="channelId">
+                        <?php foreach($salons as $value) { ?>
+                            <?php foreach($value->salons as $underValue) { ?>
+                            <?php if($underValue['id'] != "0") { ?>
+                                <option value="<?= $underValue['id'] ?>"><?= $underValue['name'] ?></option>
+                            <?php } } } ?>
+                        </select> <br/>
+                        <input type="hidden" name="action" value="4">
+                        <button type="submit">Delete channel</button>
+                    </form>
+                    <form action="?salon=<?= $showedSalon ?>" method="POST">
+                        <select name="categoryId">
+                            <?php foreach($salons as $value) { ?>
+                                <?php if($value->name != "main") { ?>
+                                    <option value="<?= $value->id ?>"><?= $value->name ?></option>
+                            <?php } } ?>
+                        </select> <br/>
+                        <input type="hidden" name="action" value="3">
+                        <button type="submit">Delete category</button>
+                    </form>
+                </div>
+            <?php } ?>
+        </div>
+
+    </div>
+    <script src='./js/main.js' defer></script>
+</body>
+</html>
